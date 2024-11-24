@@ -1,3 +1,5 @@
+import { isValid, parseISO } from 'date-fns';
+
 const NAME_REGEX = /^[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+$/;
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const PHONE_REGEX = /^(6|7|9)\d{8}$/;
@@ -5,26 +7,26 @@ const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
 //Length validations according to the database schema
 
-const validateName = (name: string) => {
+export const validateName = (name: string) => {
     if (!name || name.length < 2 || name.length > 100 || !NAME_REGEX.test(name)) {
         throw new Error('Invalid name');
     }
 };
 
-const validateEmail = (email: string) => {
+export const validateEmail = (email: string) => {
     if (!email || !EMAIL_REGEX.test(email)) {
         throw new Error('Invalid email');
     }
 };
 
-const validatePhone = (phone: string) => {
+export const validatePhone = (phone: string) => {
     if (phone && !PHONE_REGEX.test(phone)) {
         throw new Error('Invalid phone');
     }
 };
 
-const validateDate = (date: string) => {
-    if (!date || !DATE_REGEX.test(date)) {
+export const validateDate = (date: string) => {
+    if (!date || !DATE_REGEX.test(date) || !isValid(parseISO(date))) {
         throw new Error('Invalid date');
     }
 };
