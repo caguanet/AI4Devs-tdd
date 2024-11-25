@@ -22,12 +22,23 @@ export const addCandidate = async (candidateData: any) => {
                 email: candidateData.email,
                 phone: candidateData.phone,
                 address: candidateData.address,
-                educations: {
-                  create: candidateData.educations
-                },
-                workExperiences: {
-                  create: candidateData.workExperiences
-                }
+                educations: candidateData.educations ? {
+                    create: candidateData.educations
+                } : undefined,
+                workExperiences: candidateData.workExperiences ? {
+                    create: candidateData.workExperiences
+                } : undefined,
+                resumes: candidateData.cv ? {
+                    create: [{
+                        ...candidateData.cv,
+                        uploadDate: new Date()
+                    }]
+                } : undefined
+            },
+            include: {
+                educations: true,
+                workExperiences: true,
+                resumes: true
             }
         });
         
@@ -35,6 +46,9 @@ export const addCandidate = async (candidateData: any) => {
     } catch (error: any) {
         if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
             throw new Error('The email already exists in the database');
+        }
+        if (error.name === 'PrismaClientInitializationError') {
+            throw new Error('Database connection failed');
         }
         throw error;
     }
