@@ -1,7 +1,13 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} **/
 module.exports = {
-  testEnvironment: "node",
-  transform: {
-    "^.+.tsx?$": ["ts-jest",{}],
-  },
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  testMatch: ['**/*.test.ts'],
+  verbose: true,
+  clearMocks: true,
+  resetMocks: true,
+  restoreMocks: true,
+  testTimeout: 10000,
+  detectOpenHandles: true,
+  forceExit: true
 };

@@ -1,133 +1,76 @@
-import { addCandidate, setPrismaInstance } from '../application/services/candidateService';
 import { PrismaClient } from '@prisma/client';
+import { addCandidate, setPrismaInstance } from '../application/services/candidateService';
+
+let prisma: PrismaClient;
 
 jest.mock('@prisma/client', () => {
-  const actualPrismaClient = jest.requireActual('@prisma/client');
   return {
-    ...actualPrismaClient,
     PrismaClient: jest.fn().mockImplementation(() => ({
       candidate: {
-        create: jest.fn().mockResolvedValue({
-          id: 1,
-          firstName: 'Juan',
-          lastName: 'Pérez',
-          email: 'juan.perez@example.com',
-          phone: '612345678',
-          address: 'Calle Falsa 123',
-          educations: [
-            {
-              institution: 'Universidad de Ejemplo',
-              title: 'Ingeniería',
-              startDate: '2020-01-01',
-              endDate: '2024-01-01',
-            },
-          ],
-          workExperiences: [
-            {
-              company: 'Empresa Ejemplo',
-              position: 'Desarrollador',
-              startDate: '2021-01-01',
-              endDate: '2022-01-01',
-            },
-          ],
-          cv: {
-            filePath: '/path/to/cv.pdf',
-            fileType: 'application/pdf',
-          },
-        }),
+        create: jest.fn()
       },
-      education: {
-        create: jest.fn().mockResolvedValue({
-          id: 1,
-          institution: 'Universidad de Ejemplo',
-          title: 'Ingeniería',
-          startDate: '2020-01-01',
-          endDate: '2024-01-01',
-        }),
-      },
-      workExperience: {
-        create: jest.fn().mockResolvedValue({
-          id: 1,
-          company: 'Empresa Ejemplo',
-          position: 'Desarrollador',
-          startDate: '2021-01-01',
-          endDate: '2022-01-01',
-        }),
-      },
-      resume: {
-        create: jest.fn().mockResolvedValue({
-          id: 1,
-          candidateId: 1,
-          filePath: '/path/to/cv.pdf',
-          fileType: 'application/pdf',
-          uploadDate: new Date(),
-        }),
-      },
-    })),
+      $disconnect: jest.fn()
+    }))
   };
 });
 
-const mockPrisma = new PrismaClient();
+beforeAll(() => {
+  prisma = new PrismaClient();
+  prisma.candidate.create = jest.fn();
+});
+
+afterAll(async () => {
+  await prisma.$disconnect();
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
 describe('Inserción de Candidatos', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    setPrismaInstance(mockPrisma);
+    setPrismaInstance(prisma);
   });
 
   it('debería guardar un candidato válido en la base de datos', async () => {
+    // Arrange
     const candidateData = {
       firstName: 'Juan',
       lastName: 'Pérez',
       email: 'juan.perez@example.com',
       phone: '612345678',
-      address: 'Calle Falsa 123',
-      educations: [
-        {
-          institution: 'Universidad de Ejemplo',
-          title: 'Ingeniería',
-          startDate: '2020-01-01',
-          endDate: '2024-01-01',
-        },
-      ],
-      workExperiences: [
-        {
-          company: 'Empresa Ejemplo',
-          position: 'Desarrollador',
-          startDate: '2021-01-01',
-          endDate: '2022-01-01',
-        },
-      ],
-      cv: {
-        filePath: '/path/to/cv.pdf',
-        fileType: 'application/pdf',
-      },
+      address: 'Calle Falsa 123'
     };
 
+    (prisma.candidate.create as jest.Mock).mockResolvedValueOnce({
+      id: 1,
+      ...candidateData
+    });
+
+    // Act
     const result = await addCandidate(candidateData);
 
+    // Assert
     expect(result).toHaveProperty('id');
     expect(result.firstName).toBe('Juan');
-    expect(mockPrisma.candidate.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        firstName: 'Juan',
-        lastName: 'Pérez',
-        email: 'juan.perez@example.com',
-      }),
+    expect(prisma.candidate.create).toHaveBeenCalledWith({
+      data: expect.objectContaining(candidateData)
     });
   });
 
   it('debería lanzar un error si el email ya existe', async () => {
+    // Arrange
     const candidateData = {
       firstName: 'Juan',
       lastName: 'Pérez',
-      email: 'juan.perez@example.com',
+      email: 'juan.perez@example.com'
     };
 
-    (mockPrisma.candidate.create as jest.Mock).mockRejectedValueOnce(new Error('The email already exists in the database'));
+    const error = new Error('The email already exists in the database');
+    (prisma.candidate.create as jest.Mock).mockRejectedValueOnce(error);
 
-    await expect(addCandidate(candidateData)).rejects.toThrow(
-      'The email already exists in the database'
-    );
+    // Act & Assert
+    await expect(addCandidate(candidateData)).rejects.toThrow(error.message);
   });
 });

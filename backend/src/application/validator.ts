@@ -14,6 +14,10 @@ export const validateName = (name: string) => {
 };
 
 export const validateEmail = (email: string) => {
+    if (email.includes('..')) {
+        throw new Error('Invalid email');
+    }
+    
     if (!email || !EMAIL_REGEX.test(email)) {
         throw new Error('Invalid email');
     }
