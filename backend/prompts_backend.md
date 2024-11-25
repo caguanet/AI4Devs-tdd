@@ -1,5 +1,4 @@
-
-# Prompts
+# Prompt
 
 **IDE:** Cursor
 ## Prompt 1
@@ -1336,45 +1335,193 @@ info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this comm
 Please help me debug this code. Only debug the latest error.
 ```
 
+
+
+## Prompt 3
+Modelo: **claude-3.5-sonnet**
+```
+Como QA Engineer, necesito crear tests de integración para el servicio de candidatos que:
+
+1. Valide la correcta inserción de datos en la base de datos usando el mock de Prisma
+2. Verifique el manejo de errores para:
+   - Emails duplicados
+   - Datos inválidos
+   - Errores de conexión
+
+Referencia del código:
+- Servicio: backend/src/application/services/candidateService.ts
+- Tests actuales: backend/src/tests/candidateService.test.ts
+
+Consideraciones:
+- Usar el mock existente de PrismaClient
+- Verificar la estructura completa del candidato
+- Validar las relaciones (educación, experiencia, CV)
+- Comprobar los códigos de estado HTTP
+```
+
+> Se produjeron varios errores al ejecutar el test pero tras varias iteraciones estos se solventaron 
+> 
+
+## Prompt 4
+Modelo: **cursor-small**
+```
+Como QA Engineer, necesito crear tests para el servicio de carga de archivos que:
+
+1. Valide la correcta subida de archivos PDF y DOCX
+2. Verifique las restricciones de:
+   - Tamaño máximo (10MB)
+   - Tipos de archivo permitidos
+   - Nombres únicos de archivo
+
+Referencia del código:
+- Servicio: backend/src/application/services/fileUploadService.ts
+
+Requisitos:
+- Simular la carga de archivos con multer
+- Verificar la generación de nombres únicos
+- Validar los mensajes de error para archivos inválidos
+- Comprobar la estructura de la respuesta
+```
+
+> Se produjeron varios errores al ejecutar el test pero tras varias iteraciones estos se solventaron 
 ## Resultado
 ```
 yarn run v1.22.22
 $ jest --verbose
- PASS  src/tests/validator.test.ts (12.732 s)
-  Validación de Formatos
-    √ Nombre válido: Juan (8 ms)
-    √ Nombre válido: María
-    √ Nombre válido: José Luis (1 ms)              
-    √ Nombre inválido: J (23 ms)                   
-    √ Nombre inválido: 123 (1 ms)                  
-    √ Nombre inválido: Juan@ (1 ms)                
-    √ Correo válido: test@example.com (1 ms)       
-    √ Correo válido: usuario@dominio.es            
-    √ Correo inválido: test@.com (1 ms)            
-    √ Correo inválido: usuario@dominio (1 ms)      
-    √ Correo inválido: usuario@.es (1 ms)          
-    √ Teléfono válido: 612345678 (1 ms)            
-    √ Teléfono válido: 712345678                   
-    √ Teléfono válido: 912345678 (1 ms)            
-    √ Teléfono inválido: 12345678 (1 ms)           
-    √ Teléfono inválido: 812345678 (1 ms)          
-    √ Teléfono inválido: 61234567a (1 ms)
-    √ Fecha válida: 2023-01-01 (2 ms)              
-    √ Fecha válida: 1990-12-31 (1 ms)              
-    √ Fecha inválida: 2023-13-01 (1 ms)            
-    √ Fecha inválida: 1990-02-30 (1 ms)            
-    √ Fecha inválida: 01-01-2023 (1 ms)            
-                                                   
- PASS  src/tests/candidateService.test.ts (12.799 s)
+
+ RUNS  src/tests/candidateService.test.ts
+
+ RUNS  src/tests/candidateService.test.ts
+
+ RUNS  src/tests/candidateService.test.ts
+
+ RUNS  src/tests/candidateService.test.ts
+
+ RUNS  src/tests/candidateService.test.ts
+
+ RUNS  src/tests/candidateService.test.ts
+
+ RUNS  src/tests/candidateService.test.ts
+
+ RUNS  src/tests/candidateService.test.ts
+ PASS  src/tests/fileUploadService.test.ts (7.261 s)
+
+ RUNS  src/tests/candidateService.test.ts
+  Servicio de Carga de Archivos
+
+ RUNS  src/tests/candidateService.test.ts
+    √ debería aceptar archivos PDF (4 ms)
+
+ RUNS  src/tests/candidateService.test.ts
+    Validación de tamaño de archivo
+
+ RUNS  src/tests/candidateService.test.ts
+      √ debería rechazar archivos mayores a 10MB (7 ms)
+
+ RUNS  src/tests/candidateService.test.ts
+
+
+ RUNS  src/tests/candidateService.test.ts
+
+ PASS  src/tests/validator.test.ts (7.559 s)      
+
+  Validación de Datos de Candidato (España)       
+
+    Validación de Nombres
+
+      √ debería aceptar el nombre: María José (8 ms)
+
+      √ debería aceptar el nombre: Ñúñez
+
+      √ debería aceptar el nombre: José Ángel (1 ms)
+
+      √ debería aceptar el nombre: Peña Rodríguez (1 ms)
+
+      √ debería aceptar el nombre: Ramón García   
+
+      √ debería rechazar el nombre: A (Nombre demasiado corto) (15 ms)
+
+      √ debería rechazar el nombre: 123 (Contiene números) (1 ms)
+
+      √ debería rechazar el nombre: María@José (Caracteres especiales) (1 ms)
+
+      √ debería rechazar el nombre:  (Nombre vacío) (2 ms)
+
+      √ debería rechazar el nombre: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA (Excede longitud máxima) (2 ms)
+
+    Validación de Email
+
+      √ debería aceptar el email: usuario@empresa.es
+
+      √ debería aceptar el email: nombre.apellido@dominio.com.es
+
+      √ debería aceptar el email: user123@subdominio.es
+
+      √ debería aceptar el email: nombre+tag@dominio.es
+
+      √ debería rechazar el email: @dominio.es (Sin nombre de usuario) (1 ms)
+
+      √ debería rechazar el email: usuario@.es (Dominio incompleto) (1 ms)
+
+      √ debería rechazar el email: usuario@dominio (Sin TLD) (1 ms)
+
+      √ debería rechazar el email: usuario..nombre@dominio.es (Puntos consecutivos) (1 ms)
+
+    Validación de Teléfono
+
+      √ debería aceptar el teléfono: 612345678 (Móvil Vodafone) (1 ms)
+
+      √ debería aceptar el teléfono: 722345678 (Móvil Yoigo)
+
+      √ debería aceptar el teléfono: 912345678 (Fijo Madrid) (1 ms)
+
+      √ debería rechazar el teléfono: 512345678 (Prefijo inválido) (1 ms)
+
+      √ debería rechazar el teléfono: 61234567 (Número corto) (1 ms)
+
+      √ debería rechazar el teléfono: 6123456789 (Número largo)
+
+      √ debería rechazar el teléfono: 61234567a (Contiene letras) (1 ms)
+
+    Validación de Fechas
+
+      √ debería aceptar la fecha: 2024-02-29 (Año bisiesto) (1 ms)
+
+      √ debería aceptar la fecha: 2023-12-31 (Último día del año) (1 ms)
+
+      √ debería aceptar la fecha: 2024-01-01 (Primer día del año)
+
+      √ debería aceptar la fecha: 1990-01-01 (Fecha antigua)
+
+      √ debería rechazar la fecha: 2023-02-29 (Día inválido en año no bisiesto)
+
+      √ debería rechazar la fecha: 2024-13-01 (Mes inválido) (1 ms)
+
+      √ debería rechazar la fecha: 2024-00-01 (Mes cero) (1 ms)
+
+      √ debería rechazar la fecha: 01/01/2024 (Formato incorrecto)
+
+
+
+ PASS  src/tests/candidateService.test.ts (7.574 s)
+
   Inserción de Candidatos
-    √ debería guardar un candidato válido en la base de datos (21 ms)                                 
-    √ debería lanzar un error si el email ya existe (20 ms)                                           
-                                                   
+
+    √ debería guardar un candidato completo con relaciones (15 ms)
+
+    √ debería lanzar un error si el email ya existe (10 ms)
+
+    √ debería rechazar datos inválidos (7 ms)     
+
+    √ debería manejar errores de conexión (2 ms)  
+
+
+
 A worker process has failed to exit gracefully and has been force exited. This is likely caused by tests leaking due to improper teardown. Try running with --detectOpenHandles to find leaks. Active timers can also cause this, ensure that .unref() was called on them.
-Test Suites: 2 passed, 2 total                     
-Tests:       24 passed, 24 total                   
-Snapshots:   0 total                               
-Time:        14.765 s, estimated 32 s              
-Ran all test suites.                               
-Done in 19.98s.
+Test Suites: 3 passed, 3 total                    
+Tests:       39 passed, 39 total                  
+Snapshots:   0 total                              
+Time:        8.918 s, estimated 12 s              
+Ran all test suites.                              
+Done in 10.43s.
 ```
